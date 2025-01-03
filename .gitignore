@@ -1,5 +1,4 @@
 .idea
-docker-compose*
 app/artifacts/pb_data/*
 .vscode
 .DS_Store
