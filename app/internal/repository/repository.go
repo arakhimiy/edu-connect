@@ -1,8 +1,8 @@
 package repository
 
 import (
+	"github.com/arakhimiy/edu-connect/internal/repository/sqlite"
 	"github.com/pocketbase/dbx"
-	"gitlab.saidoff.uz/company/muslim-administration/mosque/back/internal/repository/sqlite"
 )
 
 type AuthorizationI interface {

@@ -5,12 +5,17 @@ import (
 	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
 	"log"
-	"os"
 	"path/filepath"
 	"sync"
 )
 
 type Config struct {
+	Otp OtpConfig
+}
+
+type OtpConfig struct {
+	BotToken  string `env:"OTP_BOT_TOKEN"`
+	ChannelId string `env:"OTP_CHANNEL_ID"`
 }
 
 var instance *Config
@@ -31,20 +36,11 @@ func GetConfig() *Config {
 		}
 
 		if err := cleanenv.ReadConfig(envFilePath, instance); err != nil {
-			helpText := "Hill Tech - First project!"
+			helpText := "Saidoff - Mosque project!"
 			help, _ := cleanenv.GetDescription(instance, &helpText)
 			log.Print(help)
 			fmt.Println("Application is starting with default config")
 		}
 	})
 	return instance
-}
-
-func getOrReturnDefault(key string, defaultValue interface{}) interface{} {
-	_, exists := os.LookupEnv(key)
-	if exists {
-		return os.Getenv(key)
-	}
-
-	return defaultValue
 }

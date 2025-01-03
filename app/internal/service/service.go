@@ -1,7 +1,8 @@
 package service
 
 import (
-	"gitlab.saidoff.uz/company/muslim-administration/mosque/back/internal/repository"
+	"github.com/arakhimiy/edu-connect/internal/repository"
+	"github.com/go-telegram/bot"
 )
 
 type AuthorizationI interface {
@@ -19,8 +20,8 @@ func (s *service) Authorization() AuthorizationI {
 	return s.AuthorizationI
 }
 
-func NewService(repo repository.I) I {
+func NewService(repo repository.I, bot *bot.Bot) I {
 	return &service{
-		AuthorizationI: NewAuthorizationS(repo.Authorization()),
+		AuthorizationI: NewAuthorizationS(repo.Authorization(), bot),
 	}
 }

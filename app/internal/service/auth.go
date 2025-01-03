@@ -1,11 +1,15 @@
 package service
 
-import "gitlab.saidoff.uz/company/muslim-administration/mosque/back/internal/repository"
+import (
+	"github.com/arakhimiy/edu-connect/internal/repository"
+	"github.com/go-telegram/bot"
+)
 
 type AuthorizationS struct {
 	repo repository.AuthorizationI
+	bot  *bot.Bot
 }
 
-func NewAuthorizationS(repo repository.AuthorizationI) *AuthorizationS {
-	return &AuthorizationS{repo: repo}
+func NewAuthorizationS(repo repository.AuthorizationI, bot *bot.Bot) *AuthorizationS {
+	return &AuthorizationS{repo: repo, bot: bot}
 }

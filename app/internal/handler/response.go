@@ -1,8 +1,8 @@
 package handler
 
 import (
+	"github.com/arakhimiy/edu-connect/internal/apperror"
 	"github.com/pocketbase/pocketbase/core"
-	"gitlab.saidoff.uz/company/muslim-administration/mosque/back/internal/apperror"
 )
 
 type errorResponse struct {

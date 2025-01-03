@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"github.com/arakhimiy/edu-connect/internal/config"
+	"github.com/arakhimiy/edu-connect/internal/service"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/router"
-	"gitlab.saidoff.uz/company/muslim-administration/mosque/back/internal/config"
-	"gitlab.saidoff.uz/company/muslim-administration/mosque/back/internal/service"
 	"log/slog"
 )
 

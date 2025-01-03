@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	application "gitlab.saidoff.uz/company/muslim-administration/mosque/back/internal/app"
-	"gitlab.saidoff.uz/company/muslim-administration/mosque/back/internal/config"
+	application "github.com/arakhimiy/edu-connect/internal/app"
+	"github.com/arakhimiy/edu-connect/internal/config"
 )
 
 func main() {

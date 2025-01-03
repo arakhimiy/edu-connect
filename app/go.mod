@@ -1,8 +1,9 @@
-module gitlab.saidoff.uz/company/muslim-administration/mosque/back
+module github.com/arakhimiy/edu-connect
 
 go 1.23.3
 
 require (
+	github.com/go-telegram/bot v1.12.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/pocketbase/dbx v1.11.0
 	github.com/pocketbase/pocketbase v0.23.12
