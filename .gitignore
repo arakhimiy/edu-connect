@@ -3,4 +3,3 @@ app/artifacts/pb_data/*
 .vscode
 .DS_Store
 /app/.env
-docker-compose-minio.yml
