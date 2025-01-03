@@ -5,7 +5,7 @@ services:
     image: dockerhub/image:latest # replace with your own image
     container_name: voyager
     ports:
-      - "8090:8090"
+      - "127.0.0.1:8090:8090"
     volumes:
       - pb_data:/pb_data
       - migrations:/migrations
