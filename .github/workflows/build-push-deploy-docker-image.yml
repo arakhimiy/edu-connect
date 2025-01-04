@@ -53,8 +53,8 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: docker-compose*.yml
-          target: ~/edu-connect
+          source: "docker-compose.yml,docker-compose-minio.yml"
+          target: ~/edu-connect/
 
       - name: Run the deployment commands
         uses: appleboy/ssh-action@v1.2.0
