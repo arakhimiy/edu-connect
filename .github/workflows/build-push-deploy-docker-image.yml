@@ -55,10 +55,10 @@ jobs:
             sed -i "s|image:.*|image: ${REGISTRY}/${IMAGE_NAME}:$(echo $GITHUB_SHA | head -c7)|g" docker-compose.yml
             
             # Pull the latest image
-            docker-compose pull
+            docker compose pull
             
             # Stop and remove any running containers
-            docker-compose down
+            docker compose down
             
             # Start containers using the updated docker-compose file
-            docker-compose -f docker-compose.yml -f docker-compose-minio.yml up -d --remove-orphans
+            docker compose -f docker-compose.yml -f docker-compose-minio.yml up -d --remove-orphans
