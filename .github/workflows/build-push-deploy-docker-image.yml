@@ -43,22 +43,29 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: IMAGE_NAME,REGISTRY,GITHUB_SHA
           script: |
-            # Login to registry
-            docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
-            
-            # Navigate to the deployment directory
-            cd ~
-            
-            # Update the docker-compose.yml file with the new image
+            # Create deployment directory if it doesn't exist
+            mkdir -p ~/edu-connect
+
+      - name: Copy docker-compose files to the remote server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ./docker-compose*.yml
+          target: ~/edu-connect
+
+      - name: Run the deployment commands
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/edu-connect
+            # Replace image in the docker-compose.yml
             sed -i "s|image:.*|image: ${REGISTRY}/${IMAGE_NAME}:$(echo $GITHUB_SHA | head -c7)|g" docker-compose.yml
-            
-            # Pull the latest image
+            # Pull and restart services
             docker compose pull
-            
-            # Stop and remove any running containers
-            docker compose down
-            
-            # Start containers using the updated docker-compose file
             docker compose -f docker-compose.yml -f docker-compose-minio.yml up -d --remove-orphans
