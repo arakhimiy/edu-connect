@@ -47,6 +47,7 @@ jobs:
             # Create deployment directory if it doesn't exist
             mkdir -p /root/edu-connect
 
+      - uses: actions/checkout@v4
       - name: Copy docker-compose files to the remote server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -54,7 +55,7 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./docker-compose.yml,./docker-compose-minio.yml"
-          target: edu-connect
+          target: ~/edu-connect/
 
       - name: Run the deployment commands
         uses: appleboy/ssh-action@v1.2.0
