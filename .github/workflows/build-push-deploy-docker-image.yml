@@ -37,22 +37,28 @@ jobs:
     needs: build_and_push
 
     steps:
-      - name: Deploy to Digital Ocean droplet via SSH action
+      - name: Deploy to DigitalOcean droplet via SSH action
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DROPLET_HOST }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: IMAGE_NAME,REGISTRY,{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA
+          envs: IMAGE_NAME,REGISTRY,GITHUB_SHA
           script: |
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
-            # Stop running container
-            docker stop $(echo $IMAGE_NAME)
-            # Remove old container
-            docker rm $(echo $IMAGE_NAME)
-            # Run a new container from a new image
-            docker run -d \
-            --restart always \
-            --name $(echo $IMAGE_NAME) \
-            $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+            
+            # Navigate to the deployment directory
+            cd ~
+            
+            # Update the docker-compose.yml file with the new image
+            sed -i "s|image:.*|image: ${REGISTRY}/${IMAGE_NAME}:$(echo $GITHUB_SHA | head -c7)|g" docker-compose.yml
+            
+            # Pull the latest image
+            docker-compose pull
+            
+            # Stop and remove any running containers
+            docker-compose down
+            
+            # Start containers using the updated docker-compose file
+            docker-compose -f docker-compose.yml -f docker-compose-minio.yml up -d --remove-orphans
