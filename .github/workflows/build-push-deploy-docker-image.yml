@@ -65,7 +65,6 @@ jobs:
           cat .env
       
 
-      - uses: actions/checkout@v4
       - name: Copy .env file to the remote server
         uses: appleboy/scp-action@v0.1.7
         with:
