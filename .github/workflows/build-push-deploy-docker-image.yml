@@ -8,13 +8,15 @@ on:
 env:
   REGISTRY: "registry.digitalocean.com/edu-connect-docker-registry"
   IMAGE_NAME: "edu-connect"
-  SHORT_HASH: $(echo $GITHUB_SHA | head -c7)
+
   
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Set SHORT_HASH environment variable
+      run: echo "SHORT_HASH=$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
     
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
