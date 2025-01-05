@@ -56,6 +56,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./docker-compose.yml,./docker-compose-minio.yml"
           target: ~/edu-connect/
+        
+      - name: Run the MinIO
+        uses: hoverkraft-tech/compose-action@v2.0.2
+        with:
+          compose-file: "~/edu-connect/docker-compose-minio.yml"
+          up-flags: "-d"
 
       - name: Run the deployment commands
         uses: appleboy/ssh-action@v1.2.0
@@ -64,9 +70,10 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/edu-connect
-            # Replace image in the docker-compose.yml
-            sed -i "s|image:.*|image: ${REGISTRY}/${IMAGE_NAME}:$(echo $GITHUB_SHA | head -c7)|g" docker-compose.yml
-            # Pull and restart services
-            docker compose pull
-            docker compose -f docker-compose.yml -f docker-compose-minio.yml up -d --remove-orphans
+            export IMAGE=$(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+
+      - name: Run the edu-connect app
+        uses: hoverkraft-tech/compose-action@v2.0.2
+        with:
+          compose-file: "~/edu-connect/docker-compose.yml"
+          up-flags: "-d"
