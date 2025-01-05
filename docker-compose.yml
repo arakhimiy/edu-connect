@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   main-service:
-    image: ${REGISTRY}/${IMAGE_NAME}:$(echo ${GITHUB_SHA} | head -c7)
+    image: ${REGISTRY}/${IMAGE_NAME}:${SHORT_HASH}
     container_name: voyager
     ports:
       - "127.0.0.1:8090:8090"
