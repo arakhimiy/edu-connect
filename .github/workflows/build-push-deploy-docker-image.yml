@@ -60,7 +60,7 @@ jobs:
       - name: Run the MinIO
         uses: hoverkraft-tech/compose-action@v2.0.2
         with:
-          compose-file: "~/edu-connect/docker-compose-minio.yml"
+          compose-file: "docker-compose-minio.yml"
           up-flags: "-d"
 
       - name: Run the deployment commands
@@ -75,5 +75,5 @@ jobs:
       - name: Run the edu-connect app
         uses: hoverkraft-tech/compose-action@v2.0.2
         with:
-          compose-file: "~/edu-connect/docker-compose.yml"
+          compose-file: "docker-compose.yml"
           up-flags: "-d"
