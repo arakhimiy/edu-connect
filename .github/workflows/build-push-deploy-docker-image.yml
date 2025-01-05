@@ -8,6 +8,7 @@ on:
 env:
   REGISTRY: "registry.digitalocean.com/edu-connect-docker-registry"
   IMAGE_NAME: "edu-connect"
+  SHORT_HASH: "$(echo $GITHUB_SHA | head -c7)"
   
 jobs:
   build_and_push:
