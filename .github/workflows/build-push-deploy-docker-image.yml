@@ -75,5 +75,5 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./docker-compose.yml,./docker-compose-minio.yml,./.env"
+          source: "./docker-compose.yml,./docker-compose-minio.yml,.env"
           target: ~/edu-connect/
