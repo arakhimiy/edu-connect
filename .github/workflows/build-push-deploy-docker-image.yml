@@ -51,13 +51,21 @@ jobs:
 
       - name: Dynamically Create .env File
         run: |
+          # Compute the short hash
           SHORT_HASH=$(echo $GITHUB_SHA | head -c7)
+          
+          # Add SHORT_HASH to the GitHub Actions environment for later steps
           echo "SHORT_HASH=$SHORT_HASH" >> $GITHUB_ENV
+          
+          # Create the .env file with the dynamic SHORT_HASH
           cat <<EOF > .env
           REGISTRY=registry.digitalocean.com/edu-connect-docker-registry
           IMAGE_NAME=edu-connect
           SHORT_HASH=$SHORT_HASH
           EOF
+          
+          # Debugging step: Show the contents of .env
+          cat .env
 
 
       - uses: actions/checkout@v4
