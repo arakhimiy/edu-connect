@@ -85,3 +85,14 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./docker-compose.yml,./docker-compose-minio.yml"
           target: ~/edu-connect/
+
+      - name: Run docker-compose on remote server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/edu-connect
+            docker compose -f docker-compose.yml up -d
+            docker compose -f docker-compose-minio.yml up -d
