@@ -1,6 +1,6 @@
 services:
   main-service:
-    image: registry.digitalocean.com/edu-connect-docker-registry/edu-connect:35de4e6
+    image: ${REGISTRY}/${IMAGE_NAME}:${SHORT_HASH}
     container_name: voyager
     ports:
       - "127.0.0.1:8090:8090"
