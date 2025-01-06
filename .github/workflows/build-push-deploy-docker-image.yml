@@ -37,6 +37,7 @@ jobs:
     needs: build_and_push
 
     steps:
+
       - name: Deploy to DigitalOcean droplet via SSH action
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -47,22 +48,14 @@ jobs:
             # Create deployment directory if it doesn't exist
             mkdir -p /root/edu-connect
 
-      - uses: actions/checkout@v4
-      - name: Copy docker-compose files to the remote server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DROPLET_HOST }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./docker-compose.yml,./docker-compose-minio.yml"
-          target: ~/edu-connect/
-
-
-      - name: Generate and Display .env File
+            
+      - name: Dynamically Create .env File
         run: |
-          SHORT_HASH=$(echo $GITHUB_SHA | head -c7)
-          echo "IMAGE=${REGISTRY}/${IMAGE_NAME}:${SHORT_HASH}" > .env
-          cat .env
+          cat <<EOF > .env
+          REGISTRY=registry.digitalocean.com/edu-connect-docker-registry
+          IMAGE_NAME=edu-connect
+          SHORT_HASH=${{ env.SHORT_HASH }}
+          EOF
       
 
       - name: Copy .env file to the remote server
@@ -73,20 +66,14 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ".env"
           target: ~/edu-connect/
-
         
-      - name: Run the MinIO
-        uses: hoverkraft-tech/compose-action@v2.0.2
-        with:
-          compose-file: "docker-compose-minio.yml"
-          up-flags: "-d"
-
 
       - uses: actions/checkout@v4
-      - name: Set SHORT_HASH environment variable
-        run: echo "SHORT_HASH=$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
-      - name: Run the edu-connect app
-        uses: hoverkraft-tech/compose-action@v2.0.2
+      - name: Copy docker-compose files to the remote server
+        uses: appleboy/scp-action@v0.1.7
         with:
-          compose-file: "docker-compose.yml"
-          up-flags: "-d"
+          host: ${{ secrets.DROPLET_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./docker-compose.yml,./docker-compose-minio.yml"
+          target: ~/edu-connect/
