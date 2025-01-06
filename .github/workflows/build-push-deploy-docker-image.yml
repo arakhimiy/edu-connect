@@ -81,14 +81,6 @@ jobs:
           compose-file: "docker-compose-minio.yml"
           up-flags: "-d"
 
-      - name: Authenticate with DOCR
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.DROPLET_HOST }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            doctl registry login --access-token "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}"
 
       - uses: actions/checkout@v4
       - name: Set SHORT_HASH environment variable
@@ -98,6 +90,3 @@ jobs:
         with:
           compose-file: "docker-compose.yml"
           up-flags: "-d"
-
-            
-
