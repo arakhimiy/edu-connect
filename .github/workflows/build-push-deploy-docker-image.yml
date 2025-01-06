@@ -48,32 +48,23 @@ jobs:
             # Create deployment directory if it doesn't exist
             mkdir -p /root/edu-connect
 
-            
+
       - name: Dynamically Create .env File
         run: |
+          echo "SHORT_HASH=$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
           cat <<EOF > .env
           REGISTRY=registry.digitalocean.com/edu-connect-docker-registry
           IMAGE_NAME=edu-connect
           SHORT_HASH=${{ env.SHORT_HASH }}
           EOF
-      
 
-      - name: Copy .env file to the remote server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DROPLET_HOST }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ".env"
-          target: ~/edu-connect/
-        
 
       - uses: actions/checkout@v4
-      - name: Copy docker-compose files to the remote server
+      - name: Copy .env and docker-compose files to the remote server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.DROPLET_HOST }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./docker-compose.yml,./docker-compose-minio.yml"
+          source: "./docker-compose.yml,./docker-compose-minio.yml,./.env"
           target: ~/edu-connect/
