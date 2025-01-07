@@ -47,7 +47,8 @@ jobs:
             # Create deployment directory if it doesn't exist
             mkdir -p /root/edu-connect
 
-
+      - uses: actions/checkout@v4
+      
       - name: Dynamically Create .env File
         run: |
           # Compute the short hash
