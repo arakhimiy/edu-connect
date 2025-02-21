@@ -16,4 +16,7 @@ FROM alpine:3.19
 
 COPY --from=build /app/main /main
 
+# Copy the migration files from the build stage to the final image
+COPY --from=build /app/artifacts/migrations /migrations
+
 CMD ["/main", "serve", "--http=0.0.0.0:8090"]
