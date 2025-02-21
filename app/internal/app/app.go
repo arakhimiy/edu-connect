@@ -20,7 +20,7 @@ func NewApp(config *config.Config) *pocketbase.PocketBase {
 		logger := app.Logger()
 		newBot, err := bot.New(config.Otp.BotToken)
 		if err != nil {
-			logger.Error("telegram bot init error")
+			logger.Error("telegram bot init error ")
 			//panic(err)
 		}
 
