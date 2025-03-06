@@ -32,8 +32,8 @@ jobs:
             docker build -t kopru-backend:latest .
 
             # Stop and remove the existing container if running
-            docker stop kopru-backend || true
-            docker rm kopru-backend || true
+            docker compose down -f docker-compose.yml
+            docker comopse down -f docker-compose-minio.yml
 
             # Run the containers
             docker compose -f docker-compose.yml up -d
