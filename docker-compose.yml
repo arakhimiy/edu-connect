@@ -1,6 +1,6 @@
 services:
   main-service:
-    image: ${REGISTRY}/${IMAGE_NAME}:${SHORT_HASH}
+    image: kopru-backend:latest
     container_name: voyager
     ports:
       - "8090:8090"
