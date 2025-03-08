@@ -4,8 +4,6 @@ services:
     container_name: voyager
     ports:
       - "127.0.0.1:8090:8090"
-    environment:
-      - PB_ORIGINS=*
     volumes:
       - pb_data:/pb_data
       - migrations:/migrations
