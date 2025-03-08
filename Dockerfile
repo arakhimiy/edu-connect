@@ -19,4 +19,4 @@ COPY --from=build /app/main /main
 # Copy the migration files from the build stage to the final image
 COPY --from=build /app/artifacts/migrations /migrations
 
-CMD ["/main", "serve", "--http=0.0.0.0:8090"]
+CMD ["/main", "serve", "--http=127.0.0.1:8090"]
