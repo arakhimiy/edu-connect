@@ -3,86 +3,40 @@ name: Docker Image CI
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-env:
-  REGISTRY: "registry.digitalocean.com/edu-connect-docker-registry"
-  IMAGE_NAME: "edu-connect"
 
   
 jobs:
-  build_and_push:
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4  
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Install doctl
-      uses: digitalocean/action-doctl@v2
-      with:
-        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-    - name: Log in to DigitalOcean Container Registry with short-lived credentials
-      run: doctl registry login --expiry-seconds 600
-    
-    - name: Remove all old images
-      run: if [ ! -z "$(doctl registry repository list | grep "$(echo $IMAGE_NAME)")" ]; then doctl registry repository delete-manifest $(echo $IMAGE_NAME) $(doctl registry repository list-tags $(echo $IMAGE_NAME) | grep -o "sha.*") --force; else echo "No repository"; fi
-
-    - name: Push image to DigitalOcean Container Registry
-      run: docker push $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build_and_push
-
-    steps:
-      - name: Deploy to DigitalOcean droplet via SSH action
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.DROPLET_HOST }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            # Create deployment directory if it doesn't exist
-            mkdir -p /root/edu-connect
-
-      - uses: actions/checkout@v4
-      
-      - name: Dynamically Create .env File
+      - name: Set up SSH
         run: |
-          # Compute the short hash
-          SHORT_HASH=$(echo $GITHUB_SHA | head -c7)
-          
-          # Add SHORT_HASH to the GitHub Actions environment for later steps
-          echo "SHORT_HASH=$SHORT_HASH" >> $GITHUB_ENV
-          
-          # Create the .env file with the dynamic SHORT_HASH
-          cat <<EOF > .env
-          REGISTRY=registry.digitalocean.com/edu-connect-docker-registry
-          IMAGE_NAME=edu-connect
-          SHORT_HASH=$SHORT_HASH
-          EOF
-          
-          # Debugging step: Show the contents of .env
-          cat .env
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
-      - name: Copy .env and docker-compose files to the remote server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DROPLET_HOST }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./docker-compose.yml,./docker-compose-minio.yml,.env"
-          target: ~/edu-connect/
+      - name: Copy files to the machine
+        run: |
+          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa" . kopru@${{ secrets.HOST }}://home/kopru/backend/
 
-      - name: Run docker-compose on remote server
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.DROPLET_HOST }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ~/edu-connect
+      - name: Build and run Docker container on DigitalOcean
+        run: |
+          ssh -i ~/.ssh/id_rsa kopru@${{ secrets.HOST }} << 'EOF'
+            cd /home/kopru/backend
+            docker build -t kopru-backend:latest .
+
+            # Stop and remove the existing container if running
+            docker compose -f docker-compose.yml down
+            docker comopse -f docker-compose-minio.yml down
+
+            # Run the containers
             docker compose -f docker-compose.yml up -d
             docker compose -f docker-compose-minio.yml up -d
+
+            # Remove old images
+            docker image prune -f
+          EOF
