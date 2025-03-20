@@ -25,9 +25,15 @@ jobs:
 
       - name: Build and run Docker container on DigitalOcean
         run: |
-          ssh -i ~/.ssh/id_rsa kopru@${{ secrets.HOST }} << 'EOF'
+          ssh -i ~/.ssh/id_rsa -o ServerAliveInterval=60 -o ServerAliveCountMax=3 kopru@${{ secrets.HOST }} << 'EOF'
             cd /home/kopru/backend
             docker build -t kopru-backend:latest .
+            
+            # Verify that the image was built successfully
+            if ! docker images | grep -q "kopru-backend"; then
+              echo "ERROR: Docker image kopru-backend:latest was not built successfully."
+              exit 1
+            fi            
 
             # Stop and remove the existing container if running
             docker compose -f docker-compose.yml down
