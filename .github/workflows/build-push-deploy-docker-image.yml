@@ -18,12 +18,12 @@ jobs:
         run: |
           sshpass -p "${{ secrets.PASSWORD }}" rsync -avz --delete \
             -e "ssh -o StrictHostKeyChecking=no" \
-            . root@${{ secrets.HOST }}:/home/projects/kopru/backend/
+            . root@${{ secrets.HOST }}:/root/projects/kopru/backend/
 
       - name: Build and run Docker container on DigitalOcean via sshpass
         run: |
           sshpass -p "${{ secrets.PASSWORD }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.HOST }} << 'EOF'
-            cd /home/projects/kopru/backend
+            cd /root/projects/kopru/backend
             docker build -t kopru-backend:latest .
 
             # Verify that the image was built successfully
